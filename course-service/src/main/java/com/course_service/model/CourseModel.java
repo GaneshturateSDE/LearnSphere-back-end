@@ -1,34 +1,54 @@
 package com.course_service.model;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.Data;
+
+import com.course_service.constants.enums.LEVEL;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "Courses")
-@Data
+@Table(name = "courses")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CourseModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String image;
+
+    @Column(nullable = false, length = 150)
     private String title;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
-    private Integer price;
+    @Column(nullable = false)
+    private String category;
+
+    private Integer instructor_id;
+
+    private String thumbnailUrl; // preview image
+
+    private Double price = 0.0; // 0.0 means free
+
+    @Column(nullable = false)
+    private Integer durationInHours; // or minutes
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private LEVEL level; // Beginner / Intermediate / Advanced
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TutorialModel> tutorials = new ArrayList<>();
 
 
-    @Override
-    public String toString() {
-        return "Course [_id=" + id + ", description=" + description + ", price=" + price
-                + ", Author="
-                 + "]";
-    }
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
 }
