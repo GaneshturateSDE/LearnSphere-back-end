@@ -1,57 +1,53 @@
 package com.User_service.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.*;
+import lombok.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Users")
-@Data
-public class UserModel{
+@Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class UserModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Value("")
+
+    @Column(length = 255)
     private String profileUrl;
 
-    @NotBlank
+    @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(name = "userType", nullable = false)
-    private String userType ;
+    @Column(name = "user_type", nullable = false, length = 50)
+    private String userType;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 150)
     private String email;
 
-    private String Password;
+    @Column(nullable = false)
+    private String password;  // ⚠ Store only hashed password
 
-    private List<Integer> courses = new ArrayList<>();
+    @Column(updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
 
 
     @Override
     public String toString() {
-        return "User [_id=" + id + ", profileUrl=" + profileUrl + ", name=" + name + ", email=" + email + ", Password="
-                + Password + "]";
+        return "UserModel{" +
+                "id=" + id +
+                ", profileUrl='" + profileUrl + '\'' +
+                ", name='" + name + '\'' +
+                ", userType='" + userType + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
-
 }
-
