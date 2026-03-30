@@ -5,12 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.course_service.DTO.CourseRequestDTO;
+import com.course_service.DTO.TutorialRequestDTO;
+import com.course_service.model.CourseModel;
+import com.course_service.services.CourseService;
 import org.springframework.http.RequestEntity;
 import org.springframework.objenesis.ObjenesisHelper;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 //import com.server.model.Course;
@@ -20,16 +21,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 // import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/courses")
 public class CourseController {
 
+    @Autowired
+    CourseService cs;
 
-    @GetMapping
+    @GetMapping("/health")
     public ResponseEntity<Map<String,Object>> getServer(){
 
         Map<String, Object> map = new HashMap<>();
@@ -38,38 +39,40 @@ public class CourseController {
         return ResponseEntity.ok(map);
     }
 
-//    @Autowired
-//    CourseService cs;
-//
-//    @Autowired
-//    CloudinaryUtil cu;
-//
-//    @GetMapping
-//    public List<Course> getCourses() {
-//        return cs.getCourses();
-//    }
-//
-//    @PostMapping
-//    public ResponseEntity<Map<String, Object>> createCourse(@RequestParam("title") String title,
-//                                                            @RequestParam("description") String description, @RequestParam("user_id") Integer user_id,
-//                                                            @RequestParam("image") MultipartFile imageFile) {
-//
-//        Course course = new Course();
-//        try {
-//            course.setImage(cu.uploadImage(imageFile));
-//        } catch (Exception e) {
-//            Map<String, Object> map = new HashMap<String, Object>();
-//            map.put("message", "Something error");
-//            return ResponseEntity.badRequest().body(map);
-//        }
-//        User user = new User();
-//        user.setId(user_id);
-//        course.setAuthor(user);
-//        course.setTitle(title);
-//        course.setDescription(description);
-//        System.out.println("id--->" + course.getAuthor().getId());
-//
-//        return cs.createCourse(course);
-//    }
+    @GetMapping
+    public ResponseEntity<Map<String,Object>> getCourse(){
+    return cs.getCourse();
+    }
+
+    @PostMapping
+    public  ResponseEntity<Map<String,Object>> createCourse(@RequestBody  CourseRequestDTO cr){
+        return cs.createCourse(cr);
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<Map<String,Object>> getCourseById(@PathVariable String id){
+        return cs.getCourseById(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String,Object>> deleteCourseById(@PathVariable String id){
+        return cs.deleteCourseById(id);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Map<String,Object>> updateCourseById(@PathVariable String id,@RequestBody  CourseRequestDTO crd){
+        return cs.updateById(id,crd);
+    }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<Map<String,Object>> getCoursesByInstructorId(@PathVariable("id") String instructorId){
+        return cs.getCoursesByInstructorId(instructorId);
+    }
+
+    @PostMapping("/{id}/tutorials/")
+    public  ResponseEntity<Map<String,Object>> addTutorials(@RequestAttribute("tutorials") List<TutorialRequestDTO> tutorials,@PathVariable("id") String courseId){
+        return cs.addTutorials(tutorials,courseId);
+    }
+
+
 
 }

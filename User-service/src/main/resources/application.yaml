@@ -1,20 +1,9 @@
 spring:
     application:
-        name: payment-service
-    datasource:
-        url: jdbc:mysql://localhost:3306/learnsphere?useSSL=false&serverTimezone=UTC
-        username: root
-        password: root
-        driver-class-name: com.mysql.cj.jdbc.Driver
-
-    jpa:
-        hibernate:
-            ddl-auto: update   
-        show-sql: true       
-        properties:
-            hibernate:
-                format_sql: true
-        database-platform: org.hibernate.dialect.MySQL8Dialect   
+        name: user-service
+    data:
+      mongodb:
+        uri: mongodb://localhost:27017/user-service
     servlet:
         multipart:
             enabled: true
@@ -22,11 +11,12 @@ spring:
             max-request-size: 10MB  
 server:
         port: 8081
-security:
-  basic:
-    enabled: false
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
+
+
+userData:
+     dummyImage: https://www.cgg.gov.in/wp-content/uploads/2017/10/dummy-profile-pic-male1.jpg
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

@@ -1,5 +1,5 @@
 server:
-  port: 8080   # Gateway runs on 8080, can change if needed
+  port: 8085
 
 spring:
   application:
@@ -7,21 +7,41 @@ spring:
 
   cloud:
     gateway:
-      routes:
-        # Route to User Service
-        - id: user-service
-          uri: http://localhost:8081  # your user-service port
-          predicates:
-            - Path=/api/users/**
+      server:
+        webflux:
+          routes:
+               - id: user-service
+                 uri: http://localhost:8081
+                 predicates:
+                      - Path=/api/users/**,/api/auth/**
 
-        # Route to Course Service
-        - id: course-service
-          uri: http://localhost:8082  # your course-service port
-          predicates:
-            - Path=/api/courses/**
+               - id: course-service
+                 uri: http://localhost:8082
+                 predicates:
+                      - Path=/api/courses/**
 
-        # Route to Payment Service
-        - id: payment-service
-          uri: http://localhost:8083  # your payment-service port
-          predicates:
-            - Path=/api/payments/**
+               - id: payment-service
+                 uri: http://localhost:8083
+                 predicates:
+                      - Path=/api/payments/**
+          globals:
+              cors-Configurations:
+                '[/**]':
+                  allowedOrigins: "*"
+                  allowedMethods:
+                    - GET
+                    - POST
+                    - PUT
+                    - DELETE
+                    - OPTIONS
+                  allowedHeaders:
+                    - "*"
+                  allowCredentials: false
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+
+
+

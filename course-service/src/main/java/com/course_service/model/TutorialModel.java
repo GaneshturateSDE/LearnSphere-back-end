@@ -1,10 +1,7 @@
 package com.course_service.model;
 
-import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
-@Table(name = "tutorials")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -12,22 +9,14 @@ import lombok.*;
 @Builder
 public class TutorialModel {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    // Mongo doesn't need ID for embedded docs (optional)
+    private String id;   // you may keep it if you want
 
-    @Column(nullable = false, length = 200)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
-    private String content; // could also be a video link, markdown, etc.
+    private String content;   // text, video link, markdown, etc.
 
-    private String resourceUrl; // optional (pdf, ppt, external doc)
+    private String resourceUrl;
 
-    @Column(nullable = false)
-    private Integer orderIndex; // order inside the course
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id", nullable = false)
-    private CourseModel course;
+    private Integer orderIndex;   // sequence inside course
 }

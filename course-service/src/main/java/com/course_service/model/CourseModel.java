@@ -1,54 +1,50 @@
 package com.course_service.model;
 
 import com.course_service.constants.enums.LEVEL;
-import jakarta.persistence.*;
 import lombok.*;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-@Entity
-@Table(name = "courses")
+@Document(collection = "courses")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class CourseModel {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id;   // MongoDB uses String/ObjectId
 
-    @Column(nullable = false, length = 150)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false)
     private String category;
 
-    private Integer instructor_id;
+    private String instructorId;   // store as String (from user-service)
 
-    private String thumbnailUrl; // preview image
+    private String thumbnailUrl;
 
-    private Double price = 0.0; // 0.0 means free
+    private Double price = 0.0;
 
-    @Column(nullable = false)
-    private Integer durationInHours; // or minutes
+    private Integer durationInHours;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private LEVEL level; // Beginner / Intermediate / Advanced
+    private LEVEL level;
 
-    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<String> users;
+
+    // Embedded documents (no join needed!)
     private List<TutorialModel> tutorials = new ArrayList<>();
 
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt = LocalDateTime.now();
-
 }

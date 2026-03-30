@@ -1,12 +1,16 @@
 package com.User_service.model;
 
-import jakarta.persistence.*;
 import lombok.*;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "users")
+import java.util.Set;
+
+@Document(collection = "users")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,35 +19,31 @@ import java.time.LocalDateTime;
 public class UserModel {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id;   // MongoDB uses String/ObjectId
 
-    @Column(length = 255)
+    @Value("${userData.dummyImage}")
     private String profileUrl;
 
-    @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(name = "user_type", nullable = false, length = 50)
-    private String userType;
+    private String userType;   // STUDENT / INSTRUCTOR
 
-    @Column(unique = true, nullable = false, length = 150)
     private String email;
 
-    @Column(nullable = false)
-    private String password;  // ⚠ Store only hashed password
+    private String password;   // store hashed password only
 
-    @Column(updatable = false)
+    private Boolean active=true;
+
+    private Set<String> coursesId;
+
     private LocalDateTime createdAt = LocalDateTime.now();
 
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-
-
     @Override
     public String toString() {
         return "UserModel{" +
-                "id=" + id +
+                "id='" + id + '\'' +
                 ", profileUrl='" + profileUrl + '\'' +
                 ", name='" + name + '\'' +
                 ", userType='" + userType + '\'' +
