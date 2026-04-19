@@ -9,6 +9,8 @@ public class UtilConfig {
 
     @Bean
     public ModelMapper getModelMapper(){
-        return  new ModelMapper();
+        ModelMapper modelMapper=new ModelMapper();
+        modelMapper.getConfiguration().setSkipNullEnabled(true);
+        return  modelMapper;
     }
 }

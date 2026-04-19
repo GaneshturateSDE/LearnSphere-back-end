@@ -1,11 +1,9 @@
 package com.User_service.controller;
 
-import com.User_service.DTO.UserLoginDTO;
-import com.User_service.DTO.UserRequestDTO;
-import com.User_service.DTO.UserResponseDTO;
-import com.User_service.DTO.UserSignupDTO;
+import com.User_service.DTO.*;
 import com.User_service.repository.AuthRepo;
 import com.User_service.services.AuthService;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +24,13 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Map<String,Object>> signup(@RequestBody UserSignupDTO usd){
+    public ResponseEntity<Map<String,Object>> signup(@RequestBody UserSignupDTO usd) throws MessagingException {
        return as.signup(usd);
+    }
+
+    @PostMapping("/otp/verify")
+    public  ResponseEntity<Map<String,Object>> verifyOtp(@RequestBody OtpRequestDTO otp){
+        return as.verifyOtp(otp.getOtp());
     }
 
 }

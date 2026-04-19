@@ -8,7 +8,19 @@ spring:
         multipart:
             enabled: true
             max-file-size: 10MB
-            max-request-size: 10MB  
+            max-request-size: 10MB
+    mail:
+      host: smtp.gmail.com
+      port: 587
+      username: ganeshturate1@gmail.com
+      password: leqtporsccbglfju
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
+
 server:
         port: 8081
 
@@ -20,3 +32,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+
+file:
+  upload-dir: User-service/uploads
+

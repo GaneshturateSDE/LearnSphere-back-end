@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Component
 public class AuthFilter implements GlobalFilter {
 
@@ -16,33 +18,62 @@ public class AuthFilter implements GlobalFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        String authHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
+//
+//        return chain.filter(exchange.mutate()
+//                .request(exchange.getRequest())
+//                .build());
+        String path = exchange.getRequest()
+                .getURI()
+                .getPath();
+        System.out.println(path);
+        // Public routes (skip authentication)
+        List<String> openEndpoints = List.of(
+                "/api/auth/login",
+                "/api/auth/signup",
+                "/api/courses",
+                "/api/courses/files/",
+                "/api/users/files/"
+        );
+
+        if (openEndpoints.stream().anyMatch(path::contains)) {
+            return chain.filter(exchange);
+        }
+
+        // Protected routes
+        String authHeader =
+                exchange.getRequest()
+                        .getHeaders()
+                        .getFirst("Authorization");
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return unauthorized(exchange);
         }
 
+
         String token = authHeader.substring(7);
 
         try {
+
             JwtUtil.validateToken(token);
 
             String userId = JwtUtil.extractUserId(token);
 
+            // Forward user info to downstream services
+            ServerHttpRequest modifiedRequest =
+                    exchange.getRequest()
+                            .mutate()
+                            .header("X-User-Id", userId)
+                            .build();
 
-            // 👉 forward data to microservices
-            ServerHttpRequest modifiedRequest =  exchange.getRequest()
-                    .mutate()
-                    .header("X-User-Id", userId).build();
-
-
-            return chain.filter(exchange.mutate()
-                    .request(modifiedRequest)
-                    .build());
+            return chain.filter(
+                    exchange.mutate()
+                            .request(modifiedRequest)
+                            .build()
+            );
 
         } catch (Exception e) {
             return unauthorized(exchange);
         }
-
 
     }
 

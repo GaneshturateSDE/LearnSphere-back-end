@@ -8,13 +8,21 @@ import com.course_service.exceptions.CourseNotFoundException;
 import com.course_service.model.CourseModel;
 import com.course_service.model.TutorialModel;
 import com.course_service.repository.CourseRepo;
+import com.course_service.repository.TutorialRepo;
+import com.course_service.utility.Utility;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,13 +36,18 @@ public class CourseService {
     CourseRepo cr;
 
     @Autowired
+    TutorialRepo tr;
+
+    @Autowired
     private ModelMapper modelMapper ;
+
+    @Value("${file.upload-dir}")
+    private String dir_name;
 
     public ResponseEntity<Map<String, Object>> getCourse(){
         List<CourseModel> list= cr.findAll();
         Map<String, Object> map = new HashMap<>();
         map.put("message","Success ");
-
      List<CourseResponseDTO> gclist=list.stream().map(c->modelMapper.map(c,CourseResponseDTO.class)).toList();
 
 //        List<GetCourseDTO> gclist=new ArrayList<>();
@@ -61,12 +74,13 @@ public class CourseService {
         return  ResponseEntity.ok(map);
     }
 
-    public ResponseEntity<Map<String,Object>> createCourse(  CourseRequestDTO cc){
-        CourseModel cm=DTOMapper.mapToModel(cc);
-           System.out.println(cc.toString());
+    public ResponseEntity<Map<String,Object>> createCourse(CourseRequestDTO cc){
+
+        CourseModel cm=modelMapper.map(cc, CourseModel.class);
+           System.out.println(cm.toString());
             cr.save(cm);
             Map<String,Object> map=new HashMap<>();
-            map.put("message","Course Created");
+            map.put("message","Created");
         return ResponseEntity.ok(map);
     }
 
@@ -77,18 +91,29 @@ public class CourseService {
 
         cr.deleteById(id);
         Map<String,Object> map=new HashMap<>();
-        map.put("message","Deleted Success");
+        map.put("message","Deleted");
         return ResponseEntity.status(201).body(map);
     }
 
-    public ResponseEntity<Map<String,Object>> updateById(String id,CourseRequestDTO crd){
-        CourseResponseDTO crd1=modelMapper.map(cr.getById(id),CourseResponseDTO.class);
-        CourseModel cm=DTOMapper.mapToModel(crd);
-        cm.setId(crd1.getId());
+    public ResponseEntity<Map<String,Object>> updateById(String id,CourseRequestDTO crd, MultipartFile mf) throws IOException {
+        System.out.println("Updated");
+        String fileUrl="";
+          if(mf!=null)
+            fileUrl= Utility.getImageUrl(dir_name,mf);
+    CourseModel oldData=cr.getById(id);
+        System.out.println("Saved file at: " + fileUrl);
+//        System.out.println("file name"+mf.getOriginalFilename());
+        CourseModel cm=modelMapper.map(crd, CourseModel.class);
+        cm.setId(id);
+        cm.setTutorials(oldData.getTutorials());
+        cm.setThumbnailUrl(oldData.getThumbnailUrl());
+        if(!fileUrl.isEmpty())
+         cm.setThumbnailUrl(fileUrl);
+
         CourseModel updateData=cr.save(cm);
         Map<String,Object> map=new HashMap<>();
-        map.put("data",DTOMapper.mapToGetCourseDTO(updateData));
-        map.put("message","Data Updated Succesfull");
+        map.put("data",modelMapper.map(updateData, CourseResponseDTO.class));
+        map.put("message","Data Updated");
         return  ResponseEntity.ok(map);
     }
 
@@ -105,12 +130,19 @@ public class CourseService {
          return ResponseEntity.ok(Map.of("data",courses));
     }
 
-    public ResponseEntity<Map<String,Object>> addTutorials(List<TutorialRequestDTO> tutorials,String courseId){
+    public ResponseEntity<Map<String,Object>> addTutorials(TutorialRequestDTO tutorial,MultipartFile file,String courseId) throws IOException {
          CourseModel course=cr.getById(courseId);
          List<TutorialModel> list=course.getTutorials();
-         for(TutorialRequestDTO t:tutorials){
-             list.add(modelMapper.map(t,TutorialModel.class));
-         }
+        String fileUrl="";
+        if(file!=null)
+           fileUrl= Utility.getImageUrl(dir_name,file);
+
+        if(!fileUrl.isEmpty())
+            tutorial.setResourceUrl(fileUrl);
+
+        list.add(tr.save(modelMapper.map(tutorial,TutorialModel.class)));
+        course.setTutorials(list);
+           cr.save(course);
 
          return ResponseEntity.ok(Map.of("message","Tutorial Added Succesfull"));
     }

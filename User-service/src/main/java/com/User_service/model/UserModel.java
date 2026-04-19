@@ -21,7 +21,7 @@ public class UserModel {
     @Id
     private String id;   // MongoDB uses String/ObjectId
 
-    @Value("${userData.dummyImage}")
+
     private String profileUrl;
 
     private String name;
@@ -32,7 +32,7 @@ public class UserModel {
 
     private String password;   // store hashed password only
 
-    private Boolean active=true;
+    private Boolean active=false;
 
     private Set<String> coursesId;
 

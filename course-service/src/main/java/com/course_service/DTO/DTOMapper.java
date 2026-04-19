@@ -10,8 +10,8 @@ public class DTOMapper {
         gc.setCategory(cm.getCategory());
         gc.setLevel(cm.getLevel());
         gc.setInstructorId(cm.getInstructorId());
-        gc.setDurationInHours(cm.getDurationInHours());
-        gc.setTitle(cm.getTitle());
+//        gc.setDurationInHours(cm.getDurationInHours());
+//        gc.setTitle(cm.getTitle());
         gc.setThumbnailUrl(cm.getThumbnailUrl());
         gc.setTutorials(cm.getTutorials());
         return gc;
@@ -26,7 +26,7 @@ public class DTOMapper {
         c.setDescription(crd.getDescription());
         c.setThumbnailUrl(crd.getThumbnailUrl());
         c.setCategory(crd.getCategory());
-        c.setDurationInHours(crd.getDurationInHours());
+//        c.setDurationInHours(crd.getDurationInHours());
         c.setTutorials(crd.getTutorials());
 
         return c;

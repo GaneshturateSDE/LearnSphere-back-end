@@ -3,6 +3,7 @@ package com.course_service.DTO;
 import com.course_service.constants.enums.LEVEL;
 import com.course_service.model.TutorialModel;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 
 
 import java.util.ArrayList;
@@ -19,11 +20,12 @@ public class CourseRequestDTO {
 
     private String instructorId;   // store as String (from user-service)
 
-    private String thumbnailUrl;
+
+    private String thumbnailUrl="http://localhost:8085/api/courses/files/images/course_thumbnail.png";
 
     private Double price ;
 
-    private Integer durationInHours;
+    private Integer durationInMin;
 
     private LEVEL level;
 

@@ -1,4 +1,5 @@
 package com.User_service.controller;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,11 +8,13 @@ import com.User_service.DTO.UserLoginDTO;
 import com.User_service.DTO.UserUpdateDTO;
 import com.User_service.model.UserModel;
 import com.User_service.services.UserService;
+import jakarta.mail.Multipart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 //import com.server.model.User;
 //import com.server.services.UserService;
@@ -44,6 +47,11 @@ public class UserController {
     @DeleteMapping("/self")
     public ResponseEntity<Map<String, Object>> deleteUser(@RequestHeader("X-User-Id") String id) {
         return us.deleteUser(id);
+    }
+
+    @PatchMapping(value = "/self/profile",consumes = "multipart/form-data")
+    public ResponseEntity<Map<String,Object>> updateProfileImage(@RequestHeader("X-User-Id") String id,@RequestParam(value="file",required=false) MultipartFile file) throws IOException {
+     return  us.updateProfileImage(id,file);
     }
 
     @PutMapping("/update-password")

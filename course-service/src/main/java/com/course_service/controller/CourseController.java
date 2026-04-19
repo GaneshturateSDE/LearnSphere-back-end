@@ -1,6 +1,7 @@
 package com.course_service.controller;
 
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,9 +59,9 @@ public class CourseController {
         return cs.deleteCourseById(id);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Map<String,Object>> updateCourseById(@PathVariable String id,@RequestBody  CourseRequestDTO crd){
-        return cs.updateById(id,crd);
+    @PutMapping(value = "/{id}",consumes ="multipart/form-data")
+    public ResponseEntity<Map<String,Object>> updateCourseById(@PathVariable String id,@ModelAttribute  CourseRequestDTO crd,@RequestParam(value = "file",required = false) MultipartFile mf) throws IOException {
+        return cs.updateById(id,crd,mf);
     }
 
     @GetMapping("/user/{id}")
@@ -68,9 +69,9 @@ public class CourseController {
         return cs.getCoursesByInstructorId(instructorId);
     }
 
-    @PostMapping("/{id}/tutorials/")
-    public  ResponseEntity<Map<String,Object>> addTutorials(@RequestAttribute("tutorials") List<TutorialRequestDTO> tutorials,@PathVariable("id") String courseId){
-        return cs.addTutorials(tutorials,courseId);
+    @PostMapping(value = "/{id}/tutorials" ,consumes = "multipart/form-data")
+    public  ResponseEntity<Map<String,Object>> addTutorials(@ModelAttribute TutorialRequestDTO tutorials,@RequestParam(value = "file",required = false) MultipartFile file,@PathVariable("id") String courseId) throws IOException {
+        return cs.addTutorials(tutorials,file,courseId);
     }
 
 

@@ -3,6 +3,7 @@ package com.course_service.model;
 import com.course_service.constants.enums.LEVEL;
 import lombok.*;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -13,10 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 @Document(collection = "courses")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class CourseModel {
 
     @Id
@@ -34,7 +32,9 @@ public class CourseModel {
 
     private Double price = 0.0;
 
-    private Integer durationInHours;
+    private Integer durationInMin;
+
+    private Integer enrolledStudents ;
 
     private LEVEL level;
 

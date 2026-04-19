@@ -16,3 +16,8 @@ eureka:
     client:
         service-url:
             defaultZone: http://localhost:8761/eureka
+
+thumbnail-url: http://localhost:8085/api/courses/files/images/course_thumbnail.png
+
+file:
+    upload-dir: course-service/uploads
