@@ -30,9 +30,13 @@ public class AuthFilter implements GlobalFilter {
         List<String> openEndpoints = List.of(
                 "/api/auth/login",
                 "/api/auth/signup",
+                "/api/auth/login/google",
+                "/api/auth/signup/google",
                 "/api/courses",
                 "/api/courses/files/",
-                "/api/users/files/"
+                "/api/users/files/",
+                "/api/auth/forgot-password",
+                "/api/auth/forgot-password/verify"
         );
 
         if (openEndpoints.stream().anyMatch(path::contains)) {

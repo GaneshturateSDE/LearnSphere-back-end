@@ -10,6 +10,8 @@ public class UserUpdateDTO {
 
     private String userType;   // STUDENT / INSTRUCTOR
 
+    private String location;
+
     private String email;
 
     private String password;   // store hashed password only

@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Document(collection = "users")
@@ -30,11 +31,13 @@ public class UserModel {
 
     private String email;
 
+    private String location;
+
     private String password;   // store hashed password only
 
     private Boolean active=false;
 
-    private Set<String> coursesId;
+    private Set<String> coursesId=new HashSet<>();
 
     private LocalDateTime createdAt = LocalDateTime.now();
 

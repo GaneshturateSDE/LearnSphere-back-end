@@ -17,6 +17,6 @@ public class OtpModel {
     private String email;
     private String otp;
 
-    @Indexed(expireAfter = "60s") // TTL index
-    private Instant expiryTime;
+    @Indexed(expireAfter = "0s") // TTL index
+    private Instant expiryTime=Instant.now().plusSeconds(300);
 }

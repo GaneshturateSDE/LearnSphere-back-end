@@ -3,15 +3,12 @@ package com.course_service.controller;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.course_service.DTO.CourseRequestDTO;
+
 import com.course_service.DTO.TutorialRequestDTO;
-import com.course_service.model.CourseModel;
 import com.course_service.services.CourseService;
-import org.springframework.http.RequestEntity;
-import org.springframework.objenesis.ObjenesisHelper;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,14 +38,28 @@ public class CourseController {
     }
 
     @GetMapping
-    public ResponseEntity<Map<String,Object>> getCourse(){
-    return cs.getCourse();
+    public ResponseEntity<Map<String,Object>> getCourse(@RequestParam(required = false) String search,
+                                                        @RequestParam(required = false) String categories,
+                                                        @RequestParam(required = false) String levels,
+                                                        @RequestParam(required = false) Double minPrice,
+                                                        @RequestParam(required = false) Double maxPrice,
+                                                        @RequestParam(required = false) Integer limit,
+                                                        @RequestParam(required = false) Integer page
+    ){
+    return cs.getCourse(search, categories, levels, minPrice, maxPrice,limit,page);
     }
 
     @PostMapping
     public  ResponseEntity<Map<String,Object>> createCourse(@RequestBody  CourseRequestDTO cr){
         return cs.createCourse(cr);
     }
+
+    @GetMapping("/user")
+    public ResponseEntity<Map<String,Object>> getCoursesByUser(@RequestParam(required = false) String coursesIds){
+        System.out.println("coursesIds:-"+coursesIds);
+        return cs.getCoursesByUser(coursesIds);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Map<String,Object>> getCourseById(@PathVariable String id){
         return cs.getCourseById(id);
@@ -73,6 +84,13 @@ public class CourseController {
     public  ResponseEntity<Map<String,Object>> addTutorials(@ModelAttribute TutorialRequestDTO tutorials,@RequestParam(value = "file",required = false) MultipartFile file,@PathVariable("id") String courseId) throws IOException {
         return cs.addTutorials(tutorials,file,courseId);
     }
+
+    @PostMapping("/enroll/{courseId}/{userId}")
+    public  ResponseEntity<Map<String,Object>> enrollCourses(@PathVariable String courseId, @PathVariable String userId){
+        return cs.enrollCourse(courseId,userId);
+    }
+
+
 
 
 

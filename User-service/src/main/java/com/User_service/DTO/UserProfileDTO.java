@@ -13,6 +13,8 @@ public class UserProfileDTO {
 
     private String name;
 
+    private String location;
+
     private String userType;   // STUDENT / INSTRUCTOR
 
     private String email;

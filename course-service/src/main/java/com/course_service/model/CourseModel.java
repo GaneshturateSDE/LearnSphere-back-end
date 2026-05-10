@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,7 +27,7 @@ public class CourseModel {
 
     private String category;
 
-    private String instructorId;   // store as String (from user-service)
+    private String instructorId;
 
     private String thumbnailUrl;
 
@@ -38,7 +39,7 @@ public class CourseModel {
 
     private LEVEL level;
 
-    private Set<String> users;
+    private Set<String> users=new HashSet<>();
 
     // Embedded documents (no join needed!)
     private List<TutorialModel> tutorials = new ArrayList<>();

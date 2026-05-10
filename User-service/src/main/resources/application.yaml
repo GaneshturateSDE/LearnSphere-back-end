@@ -4,6 +4,7 @@ spring:
     data:
       mongodb:
         uri: mongodb://localhost:27017/user-service
+        auto-index-creation: true
     servlet:
         multipart:
             enabled: true
@@ -35,4 +36,6 @@ eureka:
 
 file:
   upload-dir: User-service/uploads
+
+
 

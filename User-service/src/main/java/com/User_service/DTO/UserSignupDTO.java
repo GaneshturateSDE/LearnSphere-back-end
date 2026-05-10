@@ -8,5 +8,6 @@ public class UserSignupDTO {
     String name;
     String email;
     String userType;
+    String profileUrl;
     String password;
 }

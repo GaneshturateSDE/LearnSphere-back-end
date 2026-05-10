@@ -1,9 +1,7 @@
 package com.course_service.services;
 
-import com.course_service.DTO.CourseRequestDTO;
-import com.course_service.DTO.DTOMapper;
-import com.course_service.DTO.CourseResponseDTO;
-import com.course_service.DTO.TutorialRequestDTO;
+import com.course_service.DTO.*;
+import com.course_service.constants.enums.LEVEL;
 import com.course_service.exceptions.CourseNotFoundException;
 import com.course_service.model.CourseModel;
 import com.course_service.model.TutorialModel;
@@ -24,10 +22,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CourseService {
@@ -44,18 +40,71 @@ public class CourseService {
     @Value("${file.upload-dir}")
     private String dir_name;
 
-    public ResponseEntity<Map<String, Object>> getCourse(){
-        List<CourseModel> list= cr.findAll();
+    public ResponseEntity<Map<String, Object>> getCourse(String search,
+                                                         String categories,
+                                                         String levels,
+                                                         Double minPrice,
+                                                         Double maxPrice,
+                                                         Integer limit,
+                                                         Integer page) {
+
+        List<CourseModel> courses = cr.findAll();
+
+        // Apply filters
+        if (search != null && !search.isEmpty()) {
+            courses = courses.stream()
+                    .filter(c -> c.getTitle().toLowerCase().contains(search.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+
+        if (categories != null && !categories.isEmpty()) {
+            Set<String> categorySet = new HashSet<>(Arrays.asList(categories.split(",")));
+            courses = courses.stream()
+                    .filter(c -> categorySet.contains(c.getCategory()))
+                    .collect(Collectors.toList());
+        }
+
+        if (levels != null && !levels.isEmpty()) {
+            Set<String> levelSet = new HashSet<>(Arrays.asList(levels.split(",")));
+            courses = courses.stream()
+                    .filter(c -> levelSet.contains(c.getLevel().toString()))
+                    .collect(Collectors.toList());
+        }
+
+        if (minPrice != null && maxPrice != null) {
+            courses = courses.stream()
+                    .filter(c -> c.getPrice() >= minPrice && c.getPrice() <= maxPrice)
+                    .collect(Collectors.toList());
+        }
+
+        // ✅ Pagination logic
+        int totalItems = courses.size();
+
+        int currentPage = (page != null && page > 0) ? page : 1;
+        int pageSize = (limit != null && limit > 0) ? limit : 10;
+
+        int fromIndex = (currentPage - 1) * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, totalItems);
+
+        List<CourseModel> paginatedCourses = new ArrayList<>();
+
+        if (fromIndex < totalItems) {
+            paginatedCourses = courses.subList(fromIndex, toIndex);
+        }
+
+        // Convert to DTO
+        List<CourseResponseDTO> dtoList = paginatedCourses.stream()
+                .map(c -> modelMapper.map(c, CourseResponseDTO.class))
+                .toList();
+
+        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
+
         Map<String, Object> map = new HashMap<>();
-        map.put("message","Success ");
-     List<CourseResponseDTO> gclist=list.stream().map(c->modelMapper.map(c,CourseResponseDTO.class)).toList();
-
-//        List<GetCourseDTO> gclist=new ArrayList<>();
-//        for(CourseModel dm:list){
-//            gclist.add(DTOMapper.mapToGetCourseDTO(dm));
-//        }
-
-        map.put("data",gclist);
+        map.put("message", "Success");
+        map.put("data", dtoList);
+        map.put("currentPage", currentPage);
+        map.put("totalItems", totalItems);
+        map.put("totalPages", totalPages);
 
         return ResponseEntity.ok(map);
     }
@@ -75,7 +124,7 @@ public class CourseService {
     }
 
     public ResponseEntity<Map<String,Object>> createCourse(CourseRequestDTO cc){
-
+        System.out.println(cc.toString());
         CourseModel cm=modelMapper.map(cc, CourseModel.class);
            System.out.println(cm.toString());
             cr.save(cm);
@@ -146,6 +195,34 @@ public class CourseService {
 
          return ResponseEntity.ok(Map.of("message","Tutorial Added Succesfull"));
     }
+
+
+    public ResponseEntity<Map<String,Object>> enrollCourse(String courseId,String userId){
+        System.out.println("course_Id:-"+courseId+" UserId:-"+userId);
+        CourseModel cm=cr.getById(courseId);
+        Set<String> users=cm.getUsers();
+           if(users==null)
+                 users=new HashSet<>();
+
+          users.add(userId);
+        cm.setUsers(users);
+        cr.save(cm);
+
+        return  ResponseEntity.status(201).body(Map.of("status","success"));
+
+    }
+
+
+    public ResponseEntity<Map<String,Object>> getCoursesByUser(String coursesIds){
+        String [] courses=coursesIds.split(",");
+        List<CourseResponseDTO> courseResponseDTOS= Arrays.stream(courses).map(c->modelMapper.map(cr.getById(c),CourseResponseDTO.class)).toList();
+
+        if(courseResponseDTOS.isEmpty()) return  ResponseEntity.ok(Map.of("message","courses not found"));
+
+
+        return ResponseEntity.ok(Map.of("data",courseResponseDTOS));
+    }
+
 
 
 }

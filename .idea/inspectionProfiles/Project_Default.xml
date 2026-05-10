@@ -14,18 +14,24 @@
         <list>
           <option value="course-service" />
           <option value="User-service" />
+          <option value="User-service" />
+          <option value="payment-service" />
         </list>
       </option>
       <option name="ignoredPackages">
         <list>
           <option value="ch.qos.logback:logback-core:1.5.18" />
           <option value="org.springframework:spring-core:6.2.10" />
+          <option value="com.fasterxml.jackson.core:jackson-core:2.19.2" />
+          <option value="org.springframework.boot:spring-boot-autoconfigure:3.5.5" />
         </list>
       </option>
       <option name="ignoredReasons">
         <list>
           <option value="Not exploitable" />
           <option value="Not exploitable" />
+          <option value="Not exploitable" />
+          <option value="In progress" />
         </list>
       </option>
     </inspection_tool>

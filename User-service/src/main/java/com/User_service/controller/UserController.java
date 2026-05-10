@@ -25,8 +25,11 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/users/")
 public class UserController {
 
-    @Autowired
+
     UserService us;
+    UserController(UserService us){
+         this.us=us;
+    }
 
 
     @GetMapping
@@ -64,10 +67,9 @@ public class UserController {
         return  us.forgotPassword(email);
     }
 
-    @PutMapping("/enroll-course/{cid}")
-    public  ResponseEntity<Map<String,Object>> enrollCourse(@PathVariable String  cid) {
-
-        return  ResponseEntity.ok(Map.of("cid",cid));
+    @PostMapping("/enroll/{courseId}")
+    public  ResponseEntity<Map<String,Object>> enrollCourse(@RequestHeader("X-User-Id") String userId,@PathVariable String  courseId) {
+        return  us.enrollCourse(userId,courseId);
     }
 
 }
